@@ -1,0 +1,548 @@
+﻿<?xml version="1.0" ?>
+<!-- AutoSPInstaller Sample Configuration File
+    General Instructions:
+    1. If you use the characters ' " < > & in your configuration (e.g. in passwords) you should encode them as follows:
+        '	&apos;
+        "	&quot;
+        <	&lt;
+        >	&gt;
+        &	&amp;
+    
+    3. Use a validator like http://www.w3schools.com/xml/xml_validator.asp to check the syntax of your file.
+-->
+
+<Configuration Environment="Dev" Version="3.96">
+    <Install SPVersion="2013">
+        <ConfigFile>config-AutoSPInstaller.xml</ConfigFile>
+        <InstallDir></InstallDir>
+        <DataDir></DataDir>
+        <!-- @todo enter a specific sharepoint 2013 key here -->
+        <PIDKey>N3MDM-DXR3H-JD7QH-QKKCR-BY2Y7</PIDKey>
+        <!-- SKU You are responsible for ensuring the PIDKey matches the SKU selected, the script won't/can't validate this. -->
+        <SKU>Enterprise</SKU>
+        <!-- If true, the SharePoint prerequisite installer will install from the \SharePoint\PrerequisiteInstallerFiles folder.
+             If false, the prerequisites will be downloaded during install. In order to use true you must obviously download all the prerequisites in advance.
+             You can use a script like http://autospsourcebuilder.codeplex.com to quickly accomplish this -->
+        <OfflineInstall>false</OfflineInstall>
+        <!-- Set <PauseAfterInstall> to true in order to pause the script after the SharePoint binaries are installed.
+             Useful for running the binary install simultaneously on multiple servers but stopping short of the farm config (which can cause conflicts if running on multiple servers at once) -->
+        <PauseAfterInstall>false</PauseAfterInstall>
+        <RemoteInstall Enable="false">
+            <ParallelInstall>false</ParallelInstall>
+        </RemoteInstall>
+        <AutoAdminLogon Enable="false" Password="" />
+        <Disable>
+            <LoopbackCheck>true</LoopbackCheck>
+            <UnusedServices>false</UnusedServices>
+            <IEEnhancedSecurity>true</IEEnhancedSecurity>
+            <CertificateRevocationListCheck>false</CertificateRevocationListCheck>
+        </Disable>
+    </Install>
+
+    <Farm>
+        <!--Enter the passphase that will be used to join additional servers to the farm. This farm passphrase will also be used for the Secure Store service app-->
+        <Passphrase>Geheim123.</Passphrase>
+        <Account AddToLocalAdminsDuringSetup="true" LeaveInLocalAdmins="false">
+            <Username>dev\SP_Farm</Username>
+            <Password>Geheim123.</Password>
+        </Account>
+        <CentralAdmin Provision="development">
+            <Database>Content_Admin</Database>
+            <Port>2013</Port>
+            <UseSSL>false</UseSSL>
+        </CentralAdmin>
+        <Database>
+            <DBServer>MSSQLServer_Alias</DBServer>
+            <DBAlias Create="false"
+                     DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                     DBPort="" />
+            <DBPrefix>AutoSPInstaller</DBPrefix>
+            <ConfigDB>Config</ConfigDB>
+        </Database>
+
+        <!-- The Services section configures the core service instances & components that are part of SharePoint. *You should carefully plan and review them - incorrect configuration can have nasty effects.* 
+             Note that while some services are stopped by default, many are already started so be careful to specify ONLY the servers on which you want a particular service to be running (or "true" for all, "false" for none) -->
+        <Services>
+            <SandboxedCodeService Start="false" />
+            <ClaimsToWindowsTokenService Start="false" UpdateAccount="false" />
+            <SMTP Install="false" />
+            <OutgoingEmail Configure="true">
+                <SMTPServer></SMTPServer>
+                <EmailAddress></EmailAddress>
+                <ReplyToEmail></ReplyToEmail>
+            </OutgoingEmail>
+            <IncomingEmail Start="development" />
+            <DistributedCache Start="development" />
+            <WorkflowTimer Start="development" />
+            <FoundationWebApplication Start="development" />
+        </Services>
+
+        <!-- The ManagedAccounts section configures all accounts that will be added to SharePoint as managed accounts. -->
+        <ManagedAccounts>
+            <ManagedAccount CommonName="spservice">
+                <Username>dev\SP_Services</Username>
+                <Password>Geheim123.</Password>
+            </ManagedAccount>
+            <ManagedAccount CommonName="Portal">
+                <Username>dev\SP_PortalAppPool</Username>
+                <Password>Geheim123.</Password>
+            </ManagedAccount>
+            <ManagedAccount CommonName="MySiteHost">
+                <Username>dev\SP_ProfilesAppPool</Username>
+                <Password>Geheim123.</Password>
+            </ManagedAccount>
+            <ManagedAccount CommonName="SearchService">
+                <Username>dev\SP_SearchService</Username>
+                <Password>Geheim123.</Password>
+            </ManagedAccount>
+        </ManagedAccounts>
+
+        <ObjectCacheAccounts>
+            <SuperUser>dev\SP_CacheSuperUser</SuperUser>
+            <SuperReader>dev\SP_CacheSuperReader</SuperReader>
+        </ObjectCacheAccounts>
+        <Logging>
+            <IISLogs Compress="true">
+                <Path></Path>
+            </IISLogs>
+            <ULSLogs Compress="true">
+                <LogLocation>C:\Logs</LogLocation>
+                <LogDiskSpaceUsageGB></LogDiskSpaceUsageGB>
+                <DaysToKeepLogs></DaysToKeepLogs>
+                <LogCutInterval></LogCutInterval>
+            </ULSLogs>
+            <UsageLogs Compress="true">
+                <UsageLogDir>C:\Logs</UsageLogDir>
+                <UsageLogMaxSpaceGB></UsageLogMaxSpaceGB>
+                <UsageLogCutTime></UsageLogCutTime>
+            </UsageLogs>
+        </Logging>
+    </Farm>
+
+    <WebApplications AddURLsToHOSTS="true">
+        <!-- Web application attributes are as follows:
+        type:
+            "Portal" is the primary site. Exactly one WebApplication should have this type. It is setup as a trusted file location 
+            for Excel services, and as the portal site connection for other site collections. The script also uses it internally
+            when it requires the URL of an arbitrary site.
+            "MySiteHost" is the host web application for mysites.
+            Any additional web applications that you create should have a type of your own choice such as "Other"
+        name: Name of the web application
+        applicationPool: Application pool name
+        url: URL of the root site collection in the application pool. Do not include the port number, but do set http/https correctly.
+        UseHostHeader: true = indicates that this web app's IIS site will be configured with a host header. false = host header field in IIS will be blank
+        AddURLToLocalIntranetZone: true = indicates the suffix portion of the web application URL (e.g. *.contoso.com) will be added to Internet Explorer's Local Intranet security zone so you don't get prompted for credentials when browsing the web app URL
+        GrantCurrentUserFullControl: true = will grant the current user (i.e. the setup account) Full Control to the entire web app via the web application's policy
+        databaseName: Name of the first content database.
+        useClaims: false = disable claims based authentication. true = enable claims based authentication.
+        useBasicAuthentication: false = only accept Kerberos/NTLM claims. true = also accept Basic authentication claims. Has no effect if useClaims is false.
+        useOnlineWebPartCatalog: false = disable use of the online webpart gallery on the web application. true (default) enable it. -->
+        <WebApplication type="Portal"
+                        name="Portal"
+                        applicationPool="Portal"
+                        url="http://development"
+                        port="80"
+                        UseHostHeader="false"
+                        AddURLToLocalIntranetZone="true"
+                        GrantCurrentUserFullControl="true"
+                        useClaims="true"
+                        useBasicAuthentication="false"
+                        useOnlineWebPartCatalog="false">
+            <Database>
+                <Name>Content_Portal</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+            <ManagedPaths>
+                <ManagedPath relativeUrl="help" explicit="true" />
+            </ManagedPaths>
+            <SiteCollections>
+                <!-- You can specify multiple site collections within a web application.
+                siteUrl: URL of the site collection. Include the port if it is non default for the protocol (80/443). Do not include default ports as this will make the script fail.
+                HostNamedSiteCollection: true = specifies that this will be a host-named site collection. false = specifies that this will be a path-based site collection (make sure you have added a corresponding ManagedPath above).
+                Owner: Site collection owner account in the format DOMAIN\username. If you leave it blank, the app pool account for the web app will be made the primary owner. In either case, the currently logged-in account (the setup account) will be made secondary owner.
+                Name: Name/title of the site collection.
+                Description: Description of the site collection.
+                CustomDatabase: The name (appended to the DBPrefix specified earlier)  of a content database in which this site collection should be created. Will be created automatically if it doesn't exist. If left blank (default), the content database for the web application will be used.
+                SearchUrl: URL of the search site. This may be in another web application / site collection.
+                CustomTemplate: Set to true if a custom template is to be used.
+                Template: Name of the template to use.
+                LCID: Locale ID of the language pack to use for the site collection.
+                Locale: Actual locale of the site for regional settings. e.g. for UK English you use the US English LCID of 1033 but the locale en-gb.
+                        If omitted, the default locale of the LCID is used.
+                Time24: If true, times are displayed using a 24 hour clock. If false, AM/PM is used. If omitted, the default for the LCID is applied. -->
+                <SiteCollection siteUrl="http://development"
+                                HostNamedSiteCollection="false"
+                                Owner=""
+                                Name="Portal Home"
+                                Description="Portal Home Site"
+                                CustomDatabase=""
+                                SearchUrl="http://development/search"
+                                CustomTemplate="false"
+                                Template="SPSPORTAL#0"
+                                LCID="1033"
+                                Locale="en-us"
+                                Time24="false">
+                </SiteCollection>
+            </SiteCollections>
+        </WebApplication>
+
+        <WebApplication type="MySiteHost"
+                        name="MySite Host"
+                        applicationPool="MySites"
+                        url="http://development"
+                        port="8080"
+                        UseHostHeader="true"
+                        AddURLToLocalIntranetZone="true"
+                        GrantCurrentUserFullControl="true"
+                        useClaims="true"
+                        useBasicAuthentication="false"
+                        useOnlineWebPartCatalog="false">
+            <Database>
+                <Name>Content_MySites</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+            <ManagedPaths>
+                <ManagedPath relativeUrl="personal" explicit="false"/>
+            </ManagedPaths>
+
+            <SiteCollections>
+                <SiteCollection siteUrl="http://development:8080"
+                                HostNamedSiteCollection="false"
+                                Owner=""
+                                Name="My Site Host"
+                                Description="My Site Host"
+                                CustomDatabase=""
+                                SearchUrl="http://development/search"
+                                CustomTemplate="false"
+                                Template="SPSMSITEHOST#0"
+                                LCID="1033"
+                                Locale="en-us"
+                                Time24="false">
+                </SiteCollection>
+            </SiteCollections>
+        </WebApplication>
+    </WebApplications>
+
+    <!-- The ServiceApps section configures service applications included in the standard SharePoint licence.
+        Common Attributes:
+        Provision: Whether/which servers to provision the service application on
+        Name: Name of the application
+        ProxyName: name of the application proxy -->
+    <ServiceApps>
+        <ManagedMetadataServiceApp Provision="development"
+                                   Name="Managed Metadata Service"
+                                   ProxyName="Managed Metadata Service">
+            <Database>
+                <Name>MetaData</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </ManagedMetadataServiceApp>
+
+
+        <UserProfileServiceApp Provision="development"
+                               Name="User Profile Service Application"
+                               ProxyName="User Profile Service Application"
+                               MySiteHostLocation=""
+                               MySiteManagedPath="personal"
+                               EnableNetBIOSDomainNames="false"
+                               StartProfileSync="false"
+                               CreateDefaultSyncConnection="false"
+                               SyncConnectionAccount="dev\SP_ProfileSync"
+                               SyncConnectionAccountPassword="Geheim123." >
+            <Database>
+                <ProfileDB>Profile</ProfileDB>
+                <SyncDB>Sync</SyncDB>
+                <SocialDB>Social</SocialDB>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </UserProfileServiceApp>
+
+        <EnterpriseSearchService Provision="development"
+                                 ContactEmail=""
+                                 ConnectionTimeout="60"
+                                 AcknowledgementTimeout="60"
+                                 ProxyType="Default"
+                                 IgnoreSSLWarnings="false"
+                                 InternetIdentity="Mozilla/4.0 (compatible; MSIE 4.01; Windows NT; MS Search 6.0 Robot)"
+                                 CustomIndexLocation="C:\Program Files\Microsoft Office Servers\15.0\Data\Office Server\Application"
+                                 PerformanceLevel="PartlyReduced"
+                                 ShareName="SearchIndex">
+            <EnterpriseSearchServiceApplications>
+                <EnterpriseSearchServiceApplication Name="Search Service Application"
+                                                    FailoverDatabaseServer=""
+                                                    Partitioned="false"
+                                                    Partitions="1"
+                                                    SearchServiceApplicationType="Regular"
+                                                    ContentAccessAccount="dev\SP_SearchContent"
+                                                    ContentAccessAccountPassword="Geheim123.">
+                    <Database>
+                        <Name>Search</Name>
+                        <DBServer>MSSQLServer_Alias</DBServer>
+                        <DBAlias Create="false"
+                                 DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                                 DBPort="" />
+                    </Database>
+
+                    <ApplicationPool Name="SharePoint Search Application Pool" />
+                    <CrawlComponent>
+                        <Server Name="development" />
+                    </CrawlComponent>
+                    <QueryComponent>
+                        <Server Name="development" />
+                    </QueryComponent>
+                    <SearchQueryAndSiteSettingsServers>
+                        <Server Name="development" />
+                    </SearchQueryAndSiteSettingsServers>
+                    <AdminComponent>
+                        <Server Name="development" />
+                        <ApplicationPool Name="SharePoint Search Application Pool" />
+                    </AdminComponent>
+                    <IndexComponent>
+                        <Server Name="development" />
+                    </IndexComponent>
+                    <ContentProcessingComponent>
+                        <Server Name="development" />
+                    </ContentProcessingComponent>
+                    <AnalyticsProcessingComponent>
+                        <Server Name="development" />
+                    </AnalyticsProcessingComponent>
+                    <Proxy Name="Search Service Application" Partitioned="false">
+                        <ProxyGroup Name="Default" />
+                    </Proxy>
+
+                    <SearchCenterUrl>http://development/Pages</SearchCenterUrl>
+                </EnterpriseSearchServiceApplication>
+            </EnterpriseSearchServiceApplications>
+        </EnterpriseSearchService>
+
+        <StateService Provision="development"
+                      Name="State Service"
+                      ProxyName="State Service">
+            <Database>
+                <Name>StateService</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </StateService>
+
+        <WebAnalyticsService Provision="development"
+                             Name="Web Analytics Service Application">
+            <Database>
+                <ReportingDB>WebAnalyticsReporting</ReportingDB>
+                <StagingDB>WebAnalyticsStaging</StagingDB>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </WebAnalyticsService>
+
+        <SPUsageService Provision="development"
+                        Name="Usage and Health Data Collection">
+            <Database>
+                <Name>UsageAndHealth</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </SPUsageService>
+        <SecureStoreService Provision="development"
+                            Name="Secure Store Service"
+                            ProxyName="Secure Store Service">
+            <Database>
+                <Name>SecureStore</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </SecureStoreService>
+
+        <BusinessDataConnectivity Provision="false"
+                                  Name="Business Data Connectivity Service"
+                                  ProxyName="Business Data Connectivity Service">
+            <Database>
+                <Name>BusinessDataCatalog</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </BusinessDataConnectivity>
+
+        <WordAutomationService Provision="false"
+                               Name="Word Automation Services"
+                               ProxyName="Word Automation Services">
+            <Database>
+                <Name>WordAutomation</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </WordAutomationService>
+
+        <AppManagementService Provision="development"
+                              Name="App Management Service"
+                              ProxyName="App Management Service"
+                              AppDomain="apps.dev.com">
+            <Database>
+                <Name>AppManagement</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </AppManagementService>
+
+        <SubscriptionSettingsService Provision="development"
+                                     Name="Subscription Settings Service"
+                                     AppSiteSubscriptionName="app">
+            <Database>
+                <Name>SubscriptionSettings</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </SubscriptionSettingsService>
+
+        <WorkManagementService Provision="development"
+                               Name="Work Management Service Application"
+                               ProxyName="Work Management Service Application">
+        </WorkManagementService>
+        <MachineTranslationService Provision="false"
+                               Name="Machine Translation Service"
+                               ProxyName="Machine Translation Service">
+            <Database>
+                <Name>TranslationService</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </MachineTranslationService>
+
+        <PowerPointConversionService Provision="false"
+                           Name="PowerPoint Conversion Service Application"
+                           ProxyName="PowerPoint Conversion Service Application">
+        </PowerPointConversionService>
+    </ServiceApps>
+
+    <EnterpriseServiceApps>
+        <ExcelServices Provision="false"
+                       Name="Excel Services Application"
+                       UnattendedIDUser="dev\SP_ExcelUser"
+                       UnattendedIDPassword="Geheim123.">
+        </ExcelServices>
+        <VisioService Provision="false"
+                      Name="Visio Graphics Service"
+                      ProxyName="Visio Graphics Service"
+                      UnattendedIDUser="dev\SP_VisioUser"
+                      UnattendedIDPassword="Geheim123.">
+        </VisioService>
+
+        <!-- AccessService is the version found in SP2010, or the version called 'Access 2010 Service' in SharePoint 2013. In SharePoint 2013 you can actually provision both. -->
+        <AccessService Provision="false"
+                       Name="Access 2010 Service"
+                       ProxyName="Access 2010 Service">
+        </AccessService>
+        <!-- AccessServices is the new 2013 version, and is therefore only applicable to SharePoint 2013 -->
+        <AccessServices Provision="false"
+                        Name="Access Services"
+                        ProxyName="Access Services">
+            <Database>
+                <Name>AccessServices</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </AccessServices>
+
+        <!-- If you choose to provision Performance Point Services, the user running the script must be in the sysadmin role of the SQL server whilst the script runs. This can be revoked afterwards. -->
+        <PerformancePointService Provision="false"
+                                 Name="PerformancePoint Service"
+                                 ProxyName="PerformancePoint Service"
+                                 UnattendedIDUser="dev\SP_PerfPointUser"
+                                 UnattendedIDPassword="Geheim123.">
+            <Database>
+                <Name>PerformancePoint</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </PerformancePointService>
+    </EnterpriseServiceApps>
+
+    <!-- The OfficeWebApps section controls the installation of Office Web Apps 2010. Setting Install="true" requires the office web apps installation files to be present.
+         Note: OfficeWebApps Install can only be "true" or "false" - server names are not supported here because it's all or nothing for OWA in a 2010 farm -->
+    <OfficeWebApps Install="false"
+                   ConfigFile="config-OWA-2010.xml"
+                   PIDKeyOWA="">
+        <ExcelService Provision="false"
+                      Name="Excel Web App"
+                      ProxyName="Excel Web App"
+                      UnattendedIDUser="dev\SP_ExcelUser"
+                      UnattendedIDPassword="Geheim123.">
+        </ExcelService>
+        <WordViewingService Provision="false"
+                            Name="Word Viewing Service"
+                            ProxyName="Word Viewing Service">
+        </WordViewingService>
+        <PowerPointService Provision="false"
+                           Name="PowerPoint Service Application"
+                           ProxyName="PowerPoint Service Application">
+        </PowerPointService>
+    </OfficeWebApps>
+
+    <!-- The ProjectServer section controls the installation of Project Server 2013. Setting Install="true" requires the Project Server installation files to be present.
+         Note: ProjectServer Install can only be "true" or "false" - server names are not allowed here because the bits must be installed on every server in a SharePoint farm.
+         ProjectServerServiceApp Provision however works as usual, with comma-separated server names, or true/false. -->
+    <ProjectServer Install="false"
+                   ConfigFile="config-ProjectServer2013.xml"
+                   PIDKeyProjectServer="">
+        <ServiceApp Provision="false"
+                    Name="Project Server Service Application"
+                    ProxyName="Project Server Service Application"
+                    ManagedPath="PWA"
+                    ServiceAccount="dev\SP_ProjectServer"
+                    ServiceAccountPassword="Geheim123.">
+            <Database>
+                <Name>ProjectServer</Name>
+                <DBServer>MSSQLServer_Alias</DBServer>
+                <DBAlias Create="false"
+                         DBInstance="MSSQLServer_Alias\MSSQLSERVER"
+                         DBPort="" />
+            </Database>
+        </ServiceApp>
+    </ProjectServer>
+
+    <!-- The AdobePDF section can install the Adobe PDF iFilter and configure the search indexer to use it, plus add the proper icon for .pdf files in SharePoint.
+         Also, we can configure SharePoint web app MIME type associations to allow direct opening of PDF files (instead of the default behavior of only allowing 'save as') -->
+    <AdobePDF>
+        <!-- The iFilter element supports a comma- or space-delimited list of server names on which to install the PDF iFilter. Useful if you want to selectively install ONLY on crawl servers, for example. -->
+        <iFilter Install="false" />
+        <!-- Both the Icon and MIMEType elements support only "true" or "false"; you probably would want the icon on all farm servers, and MIMEType is a web app-wide setting anyhow, not bound to specific servers -->
+        <Icon Configure="true" />
+        <MIMEType Configure="true"/>
+    </AdobePDF>
+    <ForeFront Install="false"
+               ConfigFile="answerfile-ForeFront.xml" />
+</Configuration>
