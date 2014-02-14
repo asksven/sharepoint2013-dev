@@ -4,19 +4,17 @@
 #
 # History
 # 1.0 	2014-01-03 	Initial version 
+# 1.1	2014-02-14	Externalized config 
 ########################################################################
-# Make changes in this section if required
+Get-Content "config.txt" | foreach-object -begin {$h=@{}} -process { $k = [regex]::split($_,'='); if(($k[0].CompareTo("") -ne 0) -and ($k[0].StartsWith("[") -ne $True)) { $h.Add($k[0], $k[1]) } }
 
 # basic path and ISO info
-$developerFolderPath = "e:\automation"
-$softwareSetupPath = "e:\software"
-$sqlSetupPath = [STRING]::Concat($softwareSetupPath, "\en_sql_server_2012_enterprise_edition_with_sp1_x64_dvd\setup.exe")
+$developerFolderPath = $h.developerFolderPath
+$softwareSetupPath = $h.softwareSetupPath
+$sqlSetupPath = [STRING]::Concat($softwareSetupPath, $h.sqlSetupPath)
 
-$caAuthProvider = "NTLM"
+$caAuthProvider = $h.caAuthProvider
 
-
-# changes end here
-########################################################################
 
 Write-Host "(VM) $(Get-Date): Start to sysprep SQL Server."
 

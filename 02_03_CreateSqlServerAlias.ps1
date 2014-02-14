@@ -3,18 +3,16 @@
 # Creates an alias to be used by connections
 #
 # History
-# 1.0 	2014-01-03 	Initial version 
-###################################################################################
-# Make changes in this section if required
+# 1.0 	2014-01-03 	Initial version
+# 1.1	2014-02-14	Externalized config 
+########################################################################
+Get-Content "config.txt" | foreach-object -begin {$h=@{}} -process { $k = [regex]::split($_,'='); if(($k[0].CompareTo("") -ne 0) -and ($k[0].StartsWith("[") -ne $True)) { $h.Add($k[0], $k[1]) } }
 
 #This is the name of your SQL Alias
-$AliasName = "MSSQLSERVER_Alias"
+$AliasName = $h.sqlAliasName
  
 #This is the name of your SQL server (the actual name!)
-$ServerName = "development"
-
-# changes end here
-########################################################################
+$ServerName = $h.computerName
  
 #These are the two Registry locations for the SQL Alias locations
 $x86 = "HKLM:\Software\Microsoft\MSSQLServer\Client\ConnectTo"

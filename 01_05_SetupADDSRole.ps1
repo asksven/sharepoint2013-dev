@@ -4,15 +4,12 @@
 #
 # History
 # 1.0 	2014-01-03 	Initial version 
+# 1.1	2014-02-14	Externalized config 
 ########################################################################
-# Make changes in this section if required
+Get-Content "config.txt" | foreach-object -begin {$h=@{}} -process { $k = [regex]::split($_,'='); if(($k[0].CompareTo("") -ne 0) -and ($k[0].StartsWith("[") -ne $True)) { $h.Add($k[0], $k[1]) } }
 
-$domainName = "dev.com" # must be something as a.b.c to fullfill the prereqs (fully qualified name)
-$domainNetBIOSName = "dev"
-
-
-# changes end here
-########################################################################
+$domainName = $h.domainName # must be something as a.b.c to fullfill the prereqs (fully qualified name)
+$domainNetBIOSName = $h.domainNetBIOSName
 
 
 $addsState = Get-WindowsFeature | where {$_.name -eq "AD-Domain-Services"}

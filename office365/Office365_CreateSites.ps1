@@ -38,11 +38,24 @@ $clientContext.ExecuteQuery()
 function processWeb($web)
 {
     $lists = $web.Lists
+    #$groups = $web.Groups
     $clientContext.Load($web)
+    #$clientContext.Load($groups)
     $clientContext.ExecuteQuery()
     Write-Host "Web URL is" $web.Url
+    foreach ($group in $groups)
+    {
+        Write-Host "Group: $group"
+    }
 }
 
+#list webs
+foreach ($childWeb in $childWebs)
+{
+    processWeb($childWeb)
+}
+
+exit
 # create web 
 $wcInfo = New-Object Microsoft.SharePoint.Client.WebCreationInformation
 $wcInfo.Description = "This is a site create using powershell with CSOM"

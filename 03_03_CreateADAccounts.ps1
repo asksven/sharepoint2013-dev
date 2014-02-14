@@ -4,17 +4,14 @@
 #
 # History
 # 1.0 	2014-01-03 	Initial version 
-##############################################################
-﻿# Make changes in this section if required
-
+# 1.1	2014-02-14	Externalized config 
+########################################################################
+Get-Content "config.txt" | foreach-object -begin {$h=@{}} -process { $k = [regex]::split($_,'='); if(($k[0].CompareTo("") -ne 0) -and ($k[0].StartsWith("[") -ne $True)) { $h.Add($k[0], $k[1]) } }
 
 # create all the required accounts (see http://blog.lekman.com/2012/10/autospinstaller-prepare-server-hardware.html)
 $Users = @("SP_Services", "SP_PortalAppPool", "SP_ProfilesAppPool", "SP_SearchService", "SP_CacheSuperUser", "SP_CacheSuperReader", "SP_Farm", "SP_SearchContent", "SP_ProfileSync", "SP_ExcelUser", "SP_VisioUser", "SP_PerfPointUser", "SP_ProjectServer")
 
-$password = "Geheim123."
-
-# changes end here
-########################################################################
+$password = $h.$password
 
 Import-Module ActiveDirectory 
 

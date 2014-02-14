@@ -4,20 +4,15 @@
 #
 # History
 # 1.0 	2014-01-03 	Initial version 
-﻿########################################################################
-# Make changes in this section if required
+# 1.1	2014-02-14	Externalized config 
+########################################################################
+Get-Content "config.txt" | foreach-object -begin {$h=@{}} -process { $k = [regex]::split($_,'='); if(($k[0].CompareTo("") -ne 0) -and ($k[0].StartsWith("[") -ne $True)) { $h.Add($k[0], $k[1]) } }
 
 # basic path and ISO info
-$developerFolderPath = "e:\automation"
-$softwareSetupPath = "e:\software"
-$sqlSetupPath = [STRING]::Concat($softwareSetupPath, "\en_sql_server_2012_enterprise_edition_with_sp1_x64_dvd\setup.exe")
-$product_key = "748RB-X4T6B-MRM7V-RTVFF-CHC8H"
-
-$caAuthProvider = "NTLM"
-
-
-# changes end here
-########################################################################
+$developerFolderPath = $h.developerFolderPath
+$softwareSetupPath = $h.softwareSetupPath
+$sqlSetupPath = [STRING]::Concat($softwareSetupPath, $h.sqlSetupPath)
+$caAuthProvider = $h.caAuthProvider
 
 
 Write-Host "(VM) $(Get-Date): Start to configure SQL Server."
@@ -31,7 +26,7 @@ if(!$sqlService)
     $psExecPath = Join-Path -Path $developerFolderPath "tools\PsExec.exe"
     $psExecLogPath = Join-Path -Path $developerFolderPath "tools\PsExecLog.txt"
 
-    $sqlarguments = ' /q /ACTION=CompleteImage /PID=$product_key /SQMREPORTING=1 /INSTANCENAME=MSSQLSERVER /SQLSYSADMINACCOUNTS="BUILTIN\ADMINISTRATORS" /SQLSVCACCOUNT="NT AUTHORITY\Network Service" /SQLSVCSTARTUPTYPE=Automatic /AGTSVCACCOUNT="NT AUTHORITY\Network Service" /AGTSVCSTARTUPTYPE=Automatic /RSSVCACCOUNT="NT AUTHORITY\Network Service" /RSSVCSTARTUPTYPE=Automatic /IACCEPTSQLSERVERLICENSETERMS'
+    $sqlarguments = ' /q /ACTION=CompleteImage /SQMREPORTING=1 /INSTANCENAME=MSSQLSERVER /SQLSYSADMINACCOUNTS="BUILTIN\ADMINISTRATORS" /SQLSVCACCOUNT="NT AUTHORITY\Network Service" /SQLSVCSTARTUPTYPE=Automatic /AGTSVCACCOUNT="NT AUTHORITY\Network Service" /AGTSVCSTARTUPTYPE=Automatic /RSSVCACCOUNT="NT AUTHORITY\Network Service" /RSSVCSTARTUPTYPE=Automatic /IACCEPTSQLSERVERLICENSETERMS'
     $arguments = $sqlSetupPath + $sqlarguments
 
     #Write-Host "(VM) $(Get-Date): Preparing to execute $arguments"

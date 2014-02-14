@@ -4,18 +4,15 @@
 #
 # History
 # 1.0 	2014-01-03 	Initial version 
+# 1.1	2014-02-14	Externalized config 
 ########################################################################
-# Make changes in this section if required
+Get-Content "config.txt" | foreach-object -begin {$h=@{}} -process { $k = [regex]::split($_,'='); if(($k[0].CompareTo("") -ne 0) -and ($k[0].StartsWith("[") -ne $True)) { $h.Add($k[0], $k[1]) } }
 
-$ip = "192.168.2.200"
-$prefix = 24              # 255.255.255.0
-$gtw = "192.168.2.1"
-$primDns = "192.168.2.1"
-$secDNS  = "8.8.8.8"
-
-
-# changes end here
-########################################################################
+$ip = $h.net_ip
+$prefix = $h.net_prefix
+$gtw = $h.net_gtw
+$primDns = $h.net_primDns
+$secDNS  = $h.net_secDns
 
 # Configure adapter
 New-NetIPAddress -IPAddress $ip -InterfaceAlias "Ethernet" -DefaultGateway $gtw -AddressFamily IPv4 -PrefixLength 24

@@ -4,17 +4,14 @@
 #
 # History
 # 1.0 	2014-01-03 	Initial version 
+# 1.1	2014-02-14	Externalized config 
 ########################################################################
-# Make changes in this section if required
+Get-Content "config.txt" | foreach-object -begin {$h=@{}} -process { $k = [regex]::split($_,'='); if(($k[0].CompareTo("") -ne 0) -and ($k[0].StartsWith("[") -ne $True)) { $h.Add($k[0], $k[1]) } }
 
 # basic path and ISO info
-$developerFolderPath = "e:\automation"
-$softwareSetupPath = "e:\software"
-$sharepointSetupPath = [STRING]::Concat($softwareSetupPath, "\en_sharepoint_server_2013_x64_dvd_1121447\prerequisiteinstaller.exe")
-
-
-# changes end here
-########################################################################
+$developerFolderPath = $h.developerFolderPath
+$softwareSetupPath = $h.softwareSetupPath
+$sharepointSetupPath = [STRING]::Concat($softwareSetupPath, $h.spPrereqSetupPath)
 
 Write-Host "(VM) $(Get-Date): Start to install ShP2013 prerequisites."
 
