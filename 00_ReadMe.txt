@@ -30,7 +30,7 @@ The directory structure (assumed to be on drive e: inside of the Windows Server 
 
 * create the directory, download the ISO files and unzip
 * downloads the pstools (http://technet.microsoft.com/de-de/sysinternals/bb896649.aspx) and extract them to \automation\tools (the license restricts distribution so they can not be provided)
-* review and change the powershell scripts to reflect the directory layout
+* review and change the powershell script config "config.txt" to reflect the directory layout and settings
 * review the server name (in 01_01) and if changed make the changes to the AutoSPInstaller XML configuration
 * review the account password (01_05, 03_03, AutoSPInstall XML configuration) and consistently make the appropriate changes 
 * review the SharePoint configuration XML
