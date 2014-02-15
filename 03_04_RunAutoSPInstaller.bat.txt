@@ -1,0 +1,2 @@
+Copy the unzipped sharepoint ISO to AutoSPInstaller/2013/sharepoint
+Run AutoSPInstallerLauncher.bat
