@@ -1,0 +1,10 @@
+###############################
+# Paramaters for MakeRelease.ps1
+srcStorageAccount=<some-storage-account-name-here>
+destStorageAccount=<some-storage-account-name-here>
+
+srcUri=<some-vhd-uri-here>
+
+###############################
+
+azureSubscription=<your-azure-suscription-name-here>
