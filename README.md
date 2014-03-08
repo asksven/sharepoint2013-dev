@@ -1,4 +1,4 @@
-# Introduction
+﻿# Introduction
 This is a set of scripts for automatically setting up different stages of development environments based on Windows Server 2012 using powershell.
 
 The scripts are separated into 3 stages 01, 02 and 03:
@@ -43,7 +43,9 @@ Reboots shoule be made:
 - after 01_04
 - after 01_05
 
+
 # Recommended Steps
 
-* Install an antivirus, e.g. System Center Endpoint Proection (the client of it). Please make sure to define the proper exclusions for SharePoint (http://social.technet.microsoft.com/Forums/sharepoint/en-US/dee837e8-f76e-452a-bdbc-accceed3910c/sharepoint-2013-antivirus-exclusions?forum=sharepointgeneral) and MSSQL (https://blogs.technet.com/b/mdegre/archive/2009/08/26/microsoft-sql-server-and-antivirus.aspx)
+
+* Install an antivirus, e.g. System Center Endpoint Proection (the client of it). Please make sure to define the proper exclusions for SharePoint (http://social.technet.microsoft.com/Forums/sharepoint/en-US/dee837e8-f76e-452a-bdbc-accceed3910c/sharepoint-2013-antivirus-exclusions?forum=sharepointgeneral) and MSSQL (https://blogs.technet.com/b/mdegre/archive/2009/08/26/microsoft-sql-server-and-antivirus.aspx) see also SCEP-excludes.txt
 ﻿
