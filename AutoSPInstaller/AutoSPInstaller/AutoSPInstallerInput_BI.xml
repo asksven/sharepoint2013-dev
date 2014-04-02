@@ -373,7 +373,7 @@
             </Database>
         </SecureStoreService>
 
-        <BusinessDataConnectivity Provision="true"
+        <BusinessDataConnectivity Provision="false"
                                   Name="Business Data Connectivity Service"
                                   ProxyName="Business Data Connectivity Service">
             <Database>
@@ -476,7 +476,7 @@
         </AccessServices>
 
         <!-- If you choose to provision Performance Point Services, the user running the script must be in the sysadmin role of the SQL server whilst the script runs. This can be revoked afterwards. -->
-        <PerformancePointService Provision="true"
+        <PerformancePointService Provision="false"
                                  Name="PerformancePoint Service"
                                  ProxyName="PerformancePoint Service"
                                  UnattendedIDUser="dev\SP_PerfPointUser"
