@@ -1,5 +1,5 @@
 # Introduction
-This is a set of scripts for provisioning developer images on azure.
+This is a set of scripts for provisioning developer images on azure. Pre-requirement is that the Azure powershell extensions are installed (http://www.windowsazure.com/downloads/) sand configured (http://www.windowsazure.com/en-us/documentation/articles/install-configure-powershell/#Install)
 
 # Rationale
 We have scripts to create developer images from scratch based on an empty windows server 2012 image. The major drawback of having every developer go through the workflow of provisioning his image is that this exercise takes up a few hours. On the other hand single Sharepoint servers can not be syspreped.
