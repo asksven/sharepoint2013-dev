@@ -1,4 +1,4 @@
-# by Sven Knispel under ter terms of the Ms-PL license (see license.txt)
+﻿# by Sven Knispel under ter terms of the Ms-PL license (see license.txt)
 #
 # Make a new release of the master VHD
 #
@@ -10,9 +10,13 @@
 
 Get-Content "config.txt" | foreach-object -begin {$h=@{}} -process { $k = [regex]::split($_,'='); if(($k[0].CompareTo("") -ne 0) -and ($k[0].StartsWith("#") -ne $True) -and ($k[0].StartsWith("[") -ne $True)) { $h.Add($k[0], $k[1]) } }
 
+# needed as the azure powershell extension does not get added to PATH
+$env:PSModulePath=$env:PSModulePath+";"+"C:\Program Files (x86)\Microsoft SDKs\Windows Azure\PowerShell"
+Import-Module Azure -force
+
 Select-AzureSubscription $h.azureSubscription
  
-$releaseName = "sharepoint_2013_dev_r_1_0_0_0.vhd"
+$releaseName = "sharepoint_2013_dev_r_2_1_0_0.vhd"
 
 ### Source VHD - authenticated container ###
 $srcUri = $h.srcUri
