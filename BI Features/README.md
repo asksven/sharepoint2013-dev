@@ -30,4 +30,8 @@ The SQL Server installation, configuration and setup is described in two INI fil
 
 In case the "SQLServer_ConfigurationFile_PowerPivotSSASInstance.ini" file is re-created it must be edited afterhand: the FEATURE definition of the INI file must be commented out. 
 
-After installing and configuring PowerPivot fr Sharepoint 2013 the power pivot gallery feature will not be deployed in all web apps. To fix this go to the central admin, select Central Admin-System Settings-Manage Farms Solution and deploy powerpivotwebapplicationsolution.wsp to your web application (ref: http://sergeluca.wordpress.com/2013/01/28/sharepoint-2013-creating-a-powerpivot-gallery-and-getting-could-not-load-type-microsoft-analysisservices-spaddin-reportgallery-reportgalleryview/)
+# Further steps
+Not (yet) covered by these scripts
+
+* add a Reporting Services Service Application (central admin)
+* Install the SQL Server Data Tools BI for Visual Studio 2013 (SSDT without BI is supported by VS2013 OOB)
