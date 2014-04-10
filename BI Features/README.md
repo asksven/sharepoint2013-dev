@@ -35,3 +35,4 @@ Not (yet) covered by these scripts
 
 * add a Reporting Services Service Application (central admin)
 * Install the SQL Server Data Tools BI for Visual Studio 2013 (SSDT without BI is supported by VS2013 OOB)
+* Add enpoints to connect SSAS and MSSQL: MSSQL (TCP) 1433, SSAS (TCP) 2382 and 2383
