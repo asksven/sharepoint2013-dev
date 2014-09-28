@@ -1,4 +1,4 @@
-﻿# Introduction
+# Introduction
 This is a set of scripts for added BI capabilities to the Sharepoint 2013 development image. These capabilities are not added to the development image by default as the added services add higher resource requirements (RAM) that may not be required in all cases.
 
 The BI capabilities added are:
@@ -6,6 +6,7 @@ The BI capabilities added are:
 - SQL Server Integration Services feature 
 - SQL Server Reporting Services feature (Sharepoint integrated mode)
 - An instance of SSAS in tabular mode called POWERPIVOT
+- An instance of SSAS in multidimentional mode called OLAP
 - An Excel Services Sharepoint Service Application is added
 
 The scripts are separated into 2 stages 01, 02:
@@ -24,9 +25,11 @@ Please read the eual
 # Notes
 
 
-The SQL Server installation, configuration and setup is described in two INI files
+The SQL Server installation, configuration and setup is described in three INI files
 - SQL_Server_ConfigurationFile_SSAS_SSIS_SSRS-integrated.ini installs the features
 - SQLServer_ConfigurationFile_PowerPivotSSASInstance.ini creates the POWERPIVOT SSAS instance
+- SQL_Server_ConfigurationFile_SSAS_Multidimentional.ini creates the multidimentional SSAS instance (name=OLAP)
+- the AdventureWorks Sample database (relational, DW, cubes, etc.) can be installed following these instructions: http://technet.microsoft.com/en-us/library/jj573016(v=office.15).aspx
 
 In case the "SQLServer_ConfigurationFile_PowerPivotSSASInstance.ini" file is re-created it must be edited afterhand: the FEATURE definition of the INI file must be commented out. 
 
